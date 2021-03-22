@@ -1,4 +1,4 @@
-function o=ch3_2DFEM_L2Projection_main(option)
+function o=ch3_2DFEM_L2Projection_main_Nem(option)
 %% 2D P1-FEM: L2 projection 
 % main function: solve Poisson's eqn.
 %    Phf \in V_h: (Phf, v) = (f, v), \forall v \in V_h 
@@ -22,7 +22,7 @@ TODO{nn} = 'write a version for 1D P2-FEM: ch2_1D-P2FEM_Poisson_main.m'; nn  = n
 %% Step 1: pre-processing  
 cnt = 1; name = cell(7); name{cnt} = mfilename; 
 fprintf('Ch3: 2D P1-FEM -- L2 Projection: %s.m\n', name{cnt}); cnt = cnt + 1; 
-if ~exist('option','var'), option = ch3_2DFEM_L2Projection_option; end
+if ~exist('option','var'), option = ch3_2DFEM_L2Projection_option_Nem; end
 % pde setting: domain; load function
 pde = option.pde; loadf = pde.loadf; Df = pde.Df; g = pde.geometry; 
 name{cnt} = option.name; fprintf('option name: %s.m\n',name{cnt}); cnt = cnt + 1;
@@ -43,14 +43,14 @@ for i = 1 : Nlevel
     err.DOF(i) = size(p,2); % include bdry DOFs   
     err.h(i) = h/2^(i-1); % uniform refinement ONLY 
     % Assemble the mass matrix M
-    [M, name{cnt}] = ch3_2DFEM_MassAssembler_v1(p,t); % _v2,... 
+    M = ch3_2DFEM_MassAssembler_v1_Nem(p,t); % _v2,... 
     % Assemble the load vector b
-    [f, name{cnt+1}] = ch3_2DFEM_LoadAssembler_v1(p,t,loadf);
+    f  = ch3_2DFEM_LoadAssembler_v1_Nem(p,t,loadf);
     % Solve 
     Pf = M\f; 
     % compute err.L2 and err.H1 if we know the "exact solution"
-    [err.L2(i), name{cnt+2}] = ch3_2DFEM_L2err_v1(p,t,loadf,Pf);
-    [err.H1(i), name{cnt+3}] = ch3_2DFEM_H1err_v1(p,t,Df,Pf);
+    [err.L2(i), name{cnt+2}] = ch3_2DFEM_L2err_v1_Nem(p,t,loadf,Pf);
+    [err.H1(i), name{cnt+3}] = ch3_2DFEM_H1err_v1_Nem(p,t,Df,Pf);
     % refine the mesh (uniform refinement) 
     if i < Nlevel % why do we need this?
         [p,e,t] = refinemesh(g,p,e,t);
@@ -72,7 +72,7 @@ Pi_f = loadf(p'); % interpolant
 pdesurf(p,t,Pi_f) % plot the interpolant 
 TODO{nn} = 'add lengend, etc to the FEM solution figure'; nn = nn + 1;
 % show rate: table and/or figure 
-o4 = ch3_2DFEM_showrate(err,option);
+o4 = ch3_2DFEM_showrate_Nem(err,option);
 name{cnt} = o4.name; cnt = cnt + 1;
 o = err;
 
